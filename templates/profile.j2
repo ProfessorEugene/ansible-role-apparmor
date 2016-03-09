@@ -1,0 +1,77 @@
+{% if tunables_global.stat.exists %}
+#include <tunables/global>
+{% else %}
+@{PROC}=/proc/
+{% endif %}
+
+profile {{ profile_name }} flags=(attach_disconnected,mediate_deleted) {
+
+  {% if (abstractions_base is defined and abstractions_base) %}
+  #include <abstractions/base>
+  {% endif %}
+
+  {% if (allow_protocols is defined and allow_protocols) %}
+    {% for protocols in allow_protocols %}
+  network inet {{ protocols }},
+    {% endfor %}
+  {% else %}
+  network,
+  {% endif %}
+
+  {% if network_raw == false %}
+  deny network raw,
+  {% endif %}
+  {% if network_packet == false %}
+  network packet,
+  {% else %}
+  deny network packet,
+  {% endif %}
+
+  file,
+  umount,
+
+  {% for read_paths in read_only_paths %}
+  deny {{ read_paths }} wl,
+  {% endfor %}
+
+  {% for log_paths in log_writes_on_paths %}
+  audit {{ log_paths }} w,
+  {% endfor %}
+
+  {% for write_paths in writable_paths %}
+  {{ write_paths }} w,
+  {% endfor %}
+
+  {% for allow_exec in allow_execs %}
+  {{ allow_exec }} ix,
+  {% endfor %}
+
+  {% for deny_exec in deny_execs %}
+  deny {{ deny_exec }} mrwklx,
+  {% endfor %}
+
+  {% if (deny_caps is defined and deny_caps) %}
+  capability,
+    {% for deny_cap in deny_caps %}
+  deny capability {{ deny_cap }},
+    {% endfor %}
+  {% else %}
+    {% for allow_cap in allow_caps %}
+    capability {{ allow_cap }},
+    {% endfor %}
+  {% endif %}
+
+  deny @{PROC}/{*,**^[0-9*],sys/kernel/shm*} wkx,
+  deny @{PROC}/sysrq-trigger rwklx,
+  deny @{PROC}/mem rwklx,
+  deny @{PROC}/kmem rwklx,
+  deny @{PROC}/kcore rwklx,
+  deny mount,
+  deny /sys/[^f]*/** wklx,
+  deny /sys/f[^s]*/** wklx,
+  deny /sys/fs/[^c]*/** wklx,
+  deny /sys/fs/c[^g]*/** wklx,
+  deny /sys/fs/cg[^r]*/** wklx,
+  deny /sys/firmware/efi/efivars/** rwklx,
+  deny /sys/kernel/security/** rwklx,
+}

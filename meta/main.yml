@@ -1,0 +1,16 @@
+---
+dependencies: []
+
+galaxy_info:
+  author:TanmayaA
+  description: Generates AppArmor profile for use with Docker containers
+  company: StackExpress.com
+  license: "license (BSD, MIT)"
+  min_ansible_version: 1.9
+  platforms:
+    - name: Ubuntu
+      versions:
+      - trusty
+  galaxy_tags:
+    - apparmor
+    - security

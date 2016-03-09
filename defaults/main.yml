@@ -1,0 +1,22 @@
+---
+# Unique container profile name
+profile_name: None
+# Paths with Read-only access
+read_only_paths: []
+# Paths where any write access should be audit logged
+log_writes_on_paths: []
+# Paths with write access
+writable_paths: []
+# Allowed executable files
+allow_execs: []
+# Denied executable files
+deny_execs: []
+# Allowed Linux capabilities
+allow_caps: []
+# Denied Linux capabilities
+deny_caps: []
+# Raw packet access
+network_raw: false
+network_packet: false
+# Allowed Network protocols
+allow_protocols: []

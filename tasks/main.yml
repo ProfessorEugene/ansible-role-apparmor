@@ -1,0 +1,23 @@
+---
+ # Fail if profile_name is not specified
+- name: fail all further operations if profile_name
+  fail: msg="AppArmor profile to create is not specified"
+  when: profile_name == "None"
+
+# Check if the tunables/global exist
+- name: Check if the tunables/global exist
+  stat: path='/etc/apparmor.d/tunables/global'
+  register: tunables_global
+
+# Check if abstractions/base exist
+- name: Check if abstractions/base exist
+  stat: path='/etc/apparmor.d/abstractions/base'
+  register: abstractions_base
+
+# Generate profile config using template
+name: Create AppArmor profile
+template: src='profile.j2' dest='{{profile_dir}}/{{profile_name}}'
+
+# Apply generated config
+name: Apply generated config
+shell: {{parser_bin}} -r -W {{profile_name}}

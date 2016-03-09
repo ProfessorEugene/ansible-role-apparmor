@@ -1,0 +1,8 @@
+---
+
+- hosts: localhost
+  remote_user: root
+  vars:
+    profile_name: sample
+  roles:
+    - ansible-role-apparmor
