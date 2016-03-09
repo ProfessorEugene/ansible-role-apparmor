@@ -22,7 +22,7 @@ profile {{ profile_name }} flags=(attach_disconnected,mediate_deleted) {
   deny network raw,
   {% endif %}
   {% if network_packet == false %}
-  network packet,
+  deny network packet,
   {% else %}
   deny network packet,
   {% endif %}
