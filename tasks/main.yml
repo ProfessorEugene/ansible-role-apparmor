@@ -25,3 +25,5 @@
 - name: Apply generated config
   shell: /sbin/apparmor_parser -r -W {{ profile_name| quote }}
   changed_when: false
+  tags:
+    - apply_profile
