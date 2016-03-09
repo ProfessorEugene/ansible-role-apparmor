@@ -71,7 +71,7 @@ None.
 - https://github.com/debops-contrib/ansible-apparmor
 
 ## License
-MIT / BSD
+MIT
 
 ## Author Information
 Tanmaya Anand - http://StackExpress.com/
