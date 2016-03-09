@@ -37,11 +37,11 @@ script:
     || (echo 'Idempotence test: fail' && exit 1)
 
   # Start sample nginx container with sample AppArmor profile
-  - docker run --security-opt="apparmor:sample" -p 80:80 --rm -it nginx bash
+  # - docker run --security-opt="apparmor:sample" -p 80:80 --rm -it nginx bash
 
   # Ping should 'not' work by default in this container
-  - >
-    ping 8.8.8.8
-    | grep -q 'Lacking privilege for raw socket'
-    && (echo 'AppArmor profile check: pass' && exit 0)
-    || (echo 'AppArmor profile check: fail' && exit 1)
+  #- >
+  #    ping 8.8.8.8
+  #  | grep -q 'Lacking privilege for raw socket'
+  #  && (echo 'AppArmor profile check: pass' && exit 0)
+  #  || (echo 'AppArmor profile check: fail' && exit 1)
