@@ -2,7 +2,7 @@
 dependencies: []
 
 galaxy_info:
-  author:TanmayaA
+  author: TanmayaA
   description: Generates AppArmor profile for use with Docker containers
   company: StackExpress.com
   license: "license (BSD, MIT)"

@@ -1,5 +1,3 @@
 ---
 # AppArmor profile directory
 profile_dir: '/etc/apparmor.d/containers'
-# Full path to AppArmor parser
-parser_bin: '/sbin/apparmor_parser'
