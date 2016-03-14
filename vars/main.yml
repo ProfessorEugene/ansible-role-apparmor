@@ -1,3 +1,5 @@
 ---
 # AppArmor profile directory
 profile_dir: '/etc/apparmor.d/containers'
+# Path to docker binary
+docker_bin: '/usr/bin/docker'

@@ -17,6 +17,12 @@
   stat: path='/etc/apparmor.d/abstractions/base'
   register: abstractions_base
 
+# Get apparmor_parser version
+- name: Get apparmor_parser version
+  shell: /sbin/apparmor_parser --version | grep version | cut -d " " -f 4
+  register: apparmor_parser_version
+  changed_when: false
+  
 # Generate profile config using template
 - name: Create AppArmor profile
   template: src='profile.j2' dest='{{ profile_dir }}/{{ profile_name }}'

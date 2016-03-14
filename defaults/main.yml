@@ -1,22 +1,40 @@
 ---
 # Unique container profile name
+# Example - profile_name: 'myAppContainer'
 profile_name: None
+
 # Paths with Read-only access
+# Example - read_only_paths: ['/bin/**','/boot/*']
 read_only_paths: []
+
 # Paths where any write access should be audit logged
+# Example - log_writes_on_paths: ['/**']
 log_writes_on_paths: []
+
 # Paths with write access
+# Example - writable_paths: ['/tmp']
 writable_paths: []
+
 # Allowed executable files
+# Example - allow_execs: ['/bin/bash']
 allow_execs: []
+
 # Denied executable files
+# Example - deny_execs: ['/usr/bin/tracepath','/usr/sbin/tcpdump']
 deny_execs: []
+
 # Allowed Linux capabilities
+# Example - allow_caps: ['setuid','net_bind_service']
 allow_caps: []
+
 # Denied Linux capabilities
+# Example - deny_caps: ['chown','net_bind_service']
 deny_caps: []
-# Raw packet access
-network_raw: false
-network_packet: false
+
+# Raw packet access (for promiscous mode, etc)
+network_raw: true
+network_packet: true
+
 # Allowed Network protocols
+# Example - allow_protocols: ['tcp','udp','icmp']
 allow_protocols: []

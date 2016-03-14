@@ -4,69 +4,91 @@
 @{PROC}=/proc/
 {% endif %}
 
+
 profile {{ profile_name }} flags=(attach_disconnected,mediate_deleted) {
 
-  {% if (abstractions_base is defined and abstractions_base) %}
+{% if (abstractions_base is defined and abstractions_base) %}
   #include <abstractions/base>
-  {% endif %}
+{% endif %}
 
-  {% if (allow_protocols is defined and allow_protocols) %}
-    {% for protocols in allow_protocols %}
+{% if (allow_protocols is defined and allow_protocols) %}
+  {% for protocols in allow_protocols %}
   network inet {{ protocols }},
-    {% endfor %}
-  {% else %}
+  {% endfor %}
+{% else %}
   network,
-  {% endif %}
-
-  {% if network_raw == false %}
+{% endif %}
+{% if network_raw == false %}
   deny network raw,
-  {% endif %}
-  {% if network_packet == false %}
+{% endif %}
+{% if network_packet == false %}
   deny network packet,
-  {% else %}
-  deny network packet,
-  {% endif %}
+{% endif %}
+{% if (allow_caps is defined and allow_caps) %}
 
+  {% for allow_cap in allow_caps %}
+  capability {{ allow_cap }},
+  {% endfor %}
+
+{% else %}
+  capability,
+  {% if (deny_caps is defined and deny_caps) %}
+    {% for deny_cap in deny_caps %}
+  deny capability {{ deny_cap }},
+    {% endfor %}
+
+  {% endif %}
+{% endif %}
   file,
   umount,
+
+{% if (read_only_paths is defined and read_only_paths) %}
 
   {% for read_paths in read_only_paths %}
   deny {{ read_paths }} wl,
   {% endfor %}
 
+{% endif %}
+{% if (log_writes_on_paths is defined and log_writes_on_paths) %}
+
   {% for log_paths in log_writes_on_paths %}
   audit {{ log_paths }} w,
   {% endfor %}
+
+{% endif %}
+{% if (write_paths is defined and write_paths) %}
 
   {% for write_paths in writable_paths %}
   {{ write_paths }} w,
   {% endfor %}
 
+{% endif %}
+{% if (allow_execs is defined and allow_execs) %}
+
   {% for allow_exec in allow_execs %}
   {{ allow_exec }} ix,
   {% endfor %}
+
+{% endif %}
+{% if (deny_execs is defined and deny_execs) %}
 
   {% for deny_exec in deny_execs %}
   deny {{ deny_exec }} mrwklx,
   {% endfor %}
 
-  {% if (deny_caps is defined and deny_caps) %}
-  capability,
-    {% for deny_cap in deny_caps %}
-  deny capability {{ deny_cap }},
-    {% endfor %}
-  {% else %}
-    {% for allow_cap in allow_caps %}
-    capability {{ allow_cap }},
-    {% endfor %}
-  {% endif %}
-
-  deny @{PROC}/{*,**^[0-9*],sys/kernel/shm*} wkx,
+{% endif %}
+  deny @{PROC}/* w,   # deny write for all files directly in /proc (not in a subdir)
+  # deny write to files not in /proc/<number>/** or /proc/sys/**
+  deny @{PROC}/{[^1-9],[^1-9][^0-9],[^1-9s][^0-9y][^0-9s],[^1-9][^0-9][^0-9][^0-9]*}/** w,
+  deny @{PROC}/sys/[^k]** w,  # deny /proc/sys except /proc/sys/k* (effectively /proc/sys/kernel)
+  deny @{PROC}/sys/kernel/{?,??,[^s][^h][^m]**} w,  # deny everything except shm* in /proc/sys/kernel/
   deny @{PROC}/sysrq-trigger rwklx,
   deny @{PROC}/mem rwklx,
   deny @{PROC}/kmem rwklx,
   deny @{PROC}/kcore rwklx,
+
   deny mount,
+
   deny /sys/[^f]*/** wklx,
   deny /sys/f[^s]*/** wklx,
   deny /sys/fs/[^c]*/** wklx,
@@ -74,4 +96,16 @@ profile {{ profile_name }} flags=(attach_disconnected,mediate_deleted) {
   deny /sys/fs/cg[^r]*/** wklx,
   deny /sys/firmware/efi/efivars/** rwklx,
   deny /sys/kernel/security/** rwklx,
+{% if apparmor_parser_version.stdout | version_compare('2.8.95', 'ge') %}
+
+  # suppress ptrace denials when using 'docker ps' or using 'ps' inside a container
+  ptrace (trace,read) peer=docker-default,
+{% endif %}
+{% if apparmor_parser_version.stdout | version_compare('2.9.0', 'ge') %}
+
+  # docker daemon confinement requires explict allow rule for signal
+  signal (receive) set=(kill,term) peer={{ docker_bin }},
+{% endif %}
+
+
 }
